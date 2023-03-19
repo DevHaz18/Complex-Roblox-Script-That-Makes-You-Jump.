@@ -1,1 +1,33 @@
 
+local JUMP_HEIGHT = 20 -- Adjust this value to change the jump height
+
+local player = game:GetService("Players").LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+local jumping = false
+
+local function jump()
+    if jumping then return end
+    
+    jumping = true
+    
+    humanoid.Jump = true
+    
+    local initialHeight = character.HumanoidRootPart.Position.Y
+    
+    while character.HumanoidRootPart.Position.Y - initialHeight < JUMP_HEIGHT do
+        local currentVelocity = character.HumanoidRootPart.Velocity
+        currentVelocity = Vector3.new(currentVelocity.X, JUMP_HEIGHT * 1.5, currentVelocity.Z)
+        character.HumanoidRootPart.Velocity = currentVelocity
+        wait()
+    end
+    
+    jumping = false
+end
+
+humanoid.StateChanged:Connect(function(oldState, newState)
+    if newState == Enum.HumanoidStateType.Jumping then
+        jump()
+    end
+end)
